@@ -1,0 +1,35 @@
+html {
+    margin: 2%;
+}
+
+object {
+    border: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+h2 {
+    border-top: 1px black solid;
+    border-bottom: 1px black solid;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+h3 {
+    color: rgb(22, 39, 29);
+}
+
+input {
+    margin-left: 1%;
+}
+
+fieldset {
+    display: inline-block;
+    width: 11%;
+}
+
+div:has(label),
+button {
+    margin-top: 0.5%;
+}

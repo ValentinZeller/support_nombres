@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récap Numérologie</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <form id="form">
+        <h1>Entrez les nombres</h1>
+        <div><label for="input1">1ère Racine :</label><input type="number" name="input1" id="input1"></div>
+        <div><label for="input2">2ème Racine :</label><input type="number" name="input2" id="input2"></div>
+        <div><label for="input3">Tronc :</label><input type="number" name="input3" id="input3"></div>
+        <div><label for="input4">Écorce :</label><input type="number" name="input4" id="input4"></div>
+        <div><label for="input5">Branches :</label><input type="number" name="input5" id="input5"></div>
+        <div><label for="input6">Fruits :</label><input type="number" name="input6" id="input6"></div>
+        <div><label for="input7">Feuilles :</label><input type="number" name="input7" id="input7"></div>
+        <div><label for="input8">Dynamique de Vie :</label><input type="number" name="input8" id="input8"></div>
+        <div>
+            <fieldset>
+                <legend>Mémoire Familiale :</legend>
+                <input type="checkbox" name="mf" id="13" value="13"><label for="13">13</label>
+                <input type="checkbox" name="mf" id="14" value="14"><label for="14">14</label>
+                <input type="checkbox" name="mf" id="16" value="16"><label for="16">16</label>
+                <input type="checkbox" name="mf" id="19" value="19"><label for="19">19</label>
+            </fieldset>
+        </div>
+    </form>
+    <button id="button" onclick="send();">Envoyer</button>
+    <div id="result">
+    </div>
+</body>
+<script src="ambivalence.js"></script>
+<script>
+    let result = document.getElementById('result');
+    let form = document.getElementById('form');
+    let button = document.getElementById('button');
+    let titles = ['1ère Racine', '2ème Racine', 'Tronc', 'Écorce', 'Branches', 'Fruits', 'Feuilles', 'Dynamique de Vie'];
+    let norepeat = [];
+    let ambivalence = [];
+    let booster = [];
+    let inputs = form.getElementsByTagName('input');
+
+    async function send() {
+        for (let i = 0; i < inputs.length; i++) {
+            let input = inputs[i].value;
+            if (input == "") {
+                continue;
+            }
+            let inputTXT = input;
+
+            switch (input) {
+                case '6':
+                    inputTXT += ' ou 33/6';
+                    break;
+                case '11':
+                    inputTXT += '/2';
+                    break;
+                case '22':
+                    inputTXT += '/4'
+            }
+            if (i == 7) {
+                result.appendChild(createTitle(titles[i] + " " + inputTXT));
+                result.innerHTML += await fetchHtmlAsText("dv/" + input + ".html");
+            } else if (i > 7) {
+                if (inputs[i].checked) {
+                    result.appendChild(createTitle("Mémoire Familiale " + inputTXT));
+                    result.innerHTML += await fetchHtmlAsText("mf/" + input + ".html");
+                }
+            } else {
+                result.appendChild(createTitle(titles[i] + " " + inputTXT));
+                if (norepeat.includes(input)) {
+                    norepeat.push(input);
+                    continue;
+                } else {
+                    result.innerHTML += await fetchHtmlAsText("nombre/" + input + ".html");
+                    norepeat.push(input);
+                }
+            }
+        }
+
+        norepeat.sort(compareNumbers);
+
+        for (let i = 0; i < norepeat.length; i++) {
+            for (let j = i + 1; j < norepeat.length; j++) {
+                if (ambibooster[norepeat[i]][norepeat[j]]) {
+                    booster.push(norepeat[i] + "-" + norepeat[j]);
+                } else {
+                    ambivalence.push(norepeat[i] + "-" + norepeat[j]);
+                }
+            }
+        }
+
+        ambivalence = [...new Set(ambivalence)];
+        booster = [...new Set(booster)];
+
+        result.appendChild(createTitle("Ambivalence"));
+        for (let i = 0; i < ambivalence.length; i++) {
+            result.appendChild(createTitle(ambivalence[i], 'h4'));
+            result.innerHTML += await fetchHtmlAsText("ambivalence/" + ambivalence[i] + ".html");
+        }
+
+        result.appendChild(createTitle("Booster"));
+        for (let i = 0; i < booster.length; i++) {
+            result.appendChild(createTitle(booster[i], 'h4'));
+            result.innerHTML += await fetchHtmlAsText("ambivalence/" + booster[i] + ".html");
+        }
+
+        form.appendChild(button);
+        form.innerHTML = "";
+    }
+
+    async function fetchHtmlAsText(url) {
+        return await (await fetch(url)).text();
+    }
+
+    function createTitle(text, ele = 'h2') {
+        let title = document.createElement(ele);
+        title.innerHTML = text;
+        return title;
+    }
+
+    function compareNumbers(a, b) {
+        return a - b;
+    }
+</script>
+
+
+</html>
